@@ -11,13 +11,15 @@ python main.py
 
 ## Controls
 
+Click Easy, Medium, or Hard at startup to choose a maze size. R generates a new maze at the selected difficulty.
+
 | Key | Action |
 |-----|--------|
 | W / UP | Move up |
 | S / DOWN | Move down |
 | A / LEFT | Move left |
 | D / RIGHT | Move right |
-| R | Generate new maze |
+| R | Generate new maze at current difficulty |
 
 ## Tasks to Complete
 
