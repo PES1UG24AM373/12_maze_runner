@@ -1,6 +1,6 @@
 import pygame
 import time
-from game.maze import generate_maze, CELL
+from game.maze import generate_maze, find_shortest_path, CELL
 from game.player import Player
 
 FPS = 60
@@ -20,11 +20,13 @@ class GameEngine:
         self.clock = pygame.time.Clock()
         self.font = pygame.font.SysFont("monospace", 22)
         self.big_font = pygame.font.SysFont("monospace", 36, bold=True)
+        self.show_path = False
         self.reset()
 
     def reset(self):
         self.walls = generate_maze(COLS, ROWS)
         self.player = Player(0, 0)
+        self.path = find_shortest_path(self.walls, (0, 0), (ROWS - 1, COLS - 1))
         self.exit_rect = pygame.Rect((COLS-1)*CELL+5, (ROWS-1)*CELL+5, CELL-10, CELL-10)
         self.start_time = time.time()
         self.elapsed = 0
@@ -36,13 +38,27 @@ class GameEngine:
                 return False
             if event.type == pygame.KEYDOWN and event.key == pygame.K_r:
                 self.reset()
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_h:
+                self.show_path = not self.show_path
         return True
 
     def update(self):
         if self.won:
             return
+        previous_cell = (
+            self.player.rect.centery // CELL,
+            self.player.rect.centerx // CELL,
+        )
         keys = pygame.key.get_pressed()
         self.player.move(keys, self.walls, ROWS, COLS)
+        current_cell = (
+            self.player.rect.centery // CELL,
+            self.player.rect.centerx // CELL,
+        )
+        if current_cell != previous_cell:
+            self.path = find_shortest_path(
+                self.walls, current_cell, (ROWS - 1, COLS - 1)
+            )
         self.elapsed = time.time() - self.start_time
         if self.player.rect.colliderect(self.exit_rect):
             self.won = True
@@ -60,6 +76,11 @@ class GameEngine:
 
     def draw(self):
         self.screen.fill(BG)
+        if self.show_path:
+            path_square = pygame.Surface((CELL, CELL), pygame.SRCALPHA)
+            path_square.fill((30, 170, 220, 90))
+            for r, c in self.path:
+                self.screen.blit(path_square, (c * CELL, r * CELL))
         self.draw_maze()
         pygame.draw.rect(self.screen, EXIT_COLOR, self.exit_rect, border_radius=4)
         ex_label = self.font.render("EXIT", True, (20,80,20))
