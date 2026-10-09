@@ -87,6 +87,11 @@ class GameEngine:
         self.screen.blit(ex_label, (self.exit_rect.x+2, self.exit_rect.y+4))
         self.player.draw(self.screen)
 
+        fog = pygame.Surface((WIDTH, ROWS * CELL), pygame.SRCALPHA)
+        fog.fill((0, 0, 0, 255))
+        pygame.draw.circle(fog, (0, 0, 0, 0), self.player.rect.center, 3 * CELL)
+        self.screen.blit(fog, (0, 0))
+
         hud = pygame.Rect(0, ROWS*CELL, WIDTH, 60)
         pygame.draw.rect(self.screen, (30,30,50), hud)
         time_surf = self.font.render(f"Time: {self.elapsed:.1f}s   R = New Maze", True, (200,200,200))
