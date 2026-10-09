@@ -34,6 +34,21 @@ class Player:
             cc = px // CELL
             if cr < 0 or cr >= rows or cc < 0 or cc >= cols:
                 return True
+
+        top_cell = rect.top // CELL
+        bottom_cell = (rect.bottom - 1) // CELL
+        left_cell = rect.left // CELL
+        right_cell = (rect.right - 1) // CELL
+
+        for col in range(left_cell, right_cell):
+            for row in range(top_cell, bottom_cell + 1):
+                if walls[row][col][2]:
+                    return True
+
+        for row in range(top_cell, bottom_cell):
+            for col in range(left_cell, right_cell + 1):
+                if walls[row][col][1]:
+                    return True
         return False
 
     def draw(self, screen):
